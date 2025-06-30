@@ -42,3 +42,53 @@ npx supabase stop
 ```
 
 More info: [Supabase CLI - Getting Started](https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=access-method&access-method=studio)
+
+## 🌐 Internacionalización (i18n)
+
+Este proyecto usa [next-intl](https://next-intl-docs.vercel.app/) para soportar múltiples idiomas de forma estándar en Next.js (App Router) y TypeScript.
+
+### Estructura
+
+- Las traducciones están en `app/locales/` con un archivo JSON por idioma (`en.json`, `es.json`, `ca.json`, `fr.json`, ...).
+- El archivo `i18n/routing.ts` define los idiomas soportados y el idioma por defecto.
+- El archivo `middleware.ts` detecta el idioma de cada request y carga las traducciones adecuadas.
+
+### Ejemplo de archivo de traducción (`app/locales/en.json`):
+```json
+{
+  "HomePage": {
+    "title": "Hello world!"
+  },
+  "LoginPage": {
+    "company": "Acme Inc"
+  }
+}
+```
+
+### Uso en componentes
+
+Importa y usa el hook `useTranslations` de next-intl:
+
+```tsx
+import {useTranslations} from 'next-intl';
+
+export default function HomePage() {
+  const t = useTranslations('HomePage');
+  return <h1>{t('title')}</h1>;
+}
+```
+
+### Agregar/editar traducciones
+
+1. Edita o agrega claves en los archivos de `app/locales/`.
+2. Usa el hook `useTranslations` en tus componentes para acceder a los textos traducidos.
+
+### Configuración de idiomas
+
+Edita `i18n/routing.ts` para cambiar los idiomas soportados o el idioma por defecto:
+```ts
+export const routing = defineRouting({
+  locales: ['ca', 'fr', 'en', 'es'],
+  defaultLocale: 'ca'
+});
+```
