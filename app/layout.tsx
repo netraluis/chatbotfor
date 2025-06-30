@@ -25,8 +25,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const tenant = (await cookies()).get('tenant')?.value || null;
-  console.log({tenant});
+  const cookieStore = await cookies();
+  const tenant = cookieStore.get('tenant')?.value || null;
+
   return (
     <html lang="en">
       <body

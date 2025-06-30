@@ -5,34 +5,17 @@ import { routing } from './i18n/routing';
 const intlMiddleware = createMiddleware(routing);
 
 export function middleware(request: NextRequest) {
-  const intlResponse = intlMiddleware(request);
-  if (intlResponse) return intlResponse;
-
   const host = request.headers.get('host') || '';
   const [subdomain] = host.split('.');
 
-  // Admin/app
-  if (subdomain === 'app' || subdomain === 'admin') {
-    const response = NextResponse.next();
-    response.cookies.set('tenant', 'admin');
-    return response;
-  }
-
-  // principal domain
-  if (host === 'miurl.com' || subdomain === 'www') {
-    return NextResponse.next();
-  }
-
-  // Custom domain
-//   if (customDomains[host]) {
-//     const response = NextResponse.next();
-//     response.cookies.set('tenant', customDomains[host]);
-//     return response;
-//   }
-
-  // classic subdomain
-  const response = NextResponse.next();
-  response.cookies.set('tenant', subdomain);
+  let response = intlMiddleware(request) || NextResponse.next();
+  response.cookies.set('tenant', subdomain, {
+    path: '/',
+    httpOnly: false,
+    // domain: '.tudominio.com', // descomenta solo en producción
+    sameSite: 'lax',
+  });
+  response.headers.set('x-tenant', subdomain);
   return response;
 }
 
