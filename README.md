@@ -43,6 +43,23 @@ npx supabase stop
 
 More info: [Supabase CLI - Getting Started](https://supabase.com/docs/guides/local-development/cli/getting-started?queryGroups=access-method&access-method=studio)
 
+## How to generate a Supabase migration from the schema
+
+1. Stop the local Supabase environment (if running):
+
+```bash
+supabase stop
+```
+
+2. Generate the migration (use a short, descriptive name):
+
+```bash
+supabase db diff -f 20240611180000_initial_schema_and_rls
+```
+
+- This will create a migration file in `supabase/migrations/` with all changes from your `supabase/schemas/` directory.
+- Review the generated file to ensure it matches your intended schema and policies.
+
 ## 🌐 Internacionalización (i18n)
 
 Este proyecto usa [next-intl](https://next-intl-docs.vercel.app/) para soportar múltiples idiomas de forma estándar en Next.js (App Router) y TypeScript.

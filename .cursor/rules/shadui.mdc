@@ -32,6 +32,7 @@ alwaysApply: false
     ### UI and Styling
     - Use modern UI frameworks (e.g., Tailwind CSS, Shadcn UI, Radix UI) for styling.
     - Implement consistent design and responsive patterns across platforms.
+    - Use if is poisble the global styles from the shadui configured in /tailwind.config.ts
 
     ### State Management and Data Fetching
     - Use modern state management solutions (e.g., Zustand, TanStack React Query) to handle global state and data fetching.
