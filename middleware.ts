@@ -18,8 +18,29 @@ export async function middleware(request: NextRequest) {
   });
   response.headers.set('x-tenant', subdomain);
 
+
+    // --- APP SUBDOMAIN LOGIC (AUTH ENFORCEMENT) ---
+    if (subdomain === process.env.SUBDOMAIN_APP || subdomain === process.env.BASE_URL) {
+      console.log('app subdomain');
+      const supabase = await createSupabaseServerClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      console.log({user});
+      // If not logged in and not already on /auth/login, rewrite to /app/auth/login
+      if (!user && !pathname.startsWith('/auth/login')) {
+        const rewriteUrl = request.nextUrl.clone();
+        rewriteUrl.pathname = '/auth/login';
+        return NextResponse.redirect(rewriteUrl);
+      }
+      // If logged in or already on /auth/login, rewrite to /app/*
+      const rewriteUrl = request.nextUrl.clone();
+      rewriteUrl.pathname = `/app${pathname}`;
+      return NextResponse.rewrite(rewriteUrl);
+    }
+
   // --- TENANT SUBDOMAIN LOGIC (NO AUTH ENFORCEMENT) ---
-  if (subdomain !== 'app') {
+  if (subdomain !== process.env.SUBDOMAIN_APP ) {
     const locale = pathname.split('/')[1] as 'ca' | 'fr' | 'en' | 'es';
     if (!routing.locales.includes(locale)) {
       let newPath = `/${routing.defaultLocale}${pathname}`;
@@ -32,23 +53,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.rewrite(rewriteUrl);
   }
 
-  // --- APP SUBDOMAIN LOGIC (AUTH ENFORCEMENT) ---
-  if (subdomain === 'app') {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    // If not logged in and not already on /auth/login, rewrite to /app/auth/login
-    if (!user && !pathname.startsWith('/auth/login')) {
-      const rewriteUrl = request.nextUrl.clone();
-      rewriteUrl.pathname = '/auth/login';
-      return NextResponse.redirect(rewriteUrl);
-    }
-    // If logged in or already on /auth/login, rewrite to /app/*
-    const rewriteUrl = request.nextUrl.clone();
-    rewriteUrl.pathname = `/app${pathname}`;
-    return NextResponse.rewrite(rewriteUrl);
-  }
 }
 
 export const config = {

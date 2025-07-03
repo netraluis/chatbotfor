@@ -1,0 +1,9 @@
+version: "2"
+authtoken: ****
+tunnels:
+  web:
+    proto: http
+    addr: 3000
+  supabase:
+    proto: http
+    addr: 54321

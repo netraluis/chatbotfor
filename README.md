@@ -109,3 +109,21 @@ export const routing = defineRouting({
   defaultLocale: 'ca'
 });
 ```
+
+## 🔑 Google Auth local (OAuth)
+
+Para usar autenticación con Google en local:
+
+1. Expón tu app y tu Supabase local usando ngrok (o similar):
+   - Para la app: `ngrok http 3000`
+   - Para Supabase: `ngrok http 54321`
+   - Obtendrás dos URLs públicas, por ejemplo: `https://app-xxxx.ngrok.io` y `https://supabase-xxxx.ngrok.io`
+2. Ve a [Google Cloud Console](https://console.cloud.google.com/apis/credentials) y edita tu OAuth 2.0 Client ID.
+3. En **Authorized origins** añade:
+   - La URL local de tu app: `http://localhost:3000`
+   - La URL pública de tu app generada por ngrok: `https://app-xxxx.ngrok.io`
+4. En **Authorized redirect URIs** añade:
+   - `http://localhost:54321/auth/v1/callback`
+   - La URL pública de Supabase generada por ngrok + `/auth/v1/callback`: `https://supabase-xxxx.ngrok.io/auth/v1/callback`
+
+Esto es necesario para que Supabase pueda manejar el callback de Google correctamente en local y para que Google acepte los orígenes y redirects de tu entorno de desarrollo.

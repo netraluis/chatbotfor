@@ -1,66 +1,31 @@
 'use client'
+import ConfirmationScreen from '@/components/card/confirmation-card'
 import { useState } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase-client'
+import { CircleUser } from 'lucide-react'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
   const supabase = createSupabaseBrowserClient()
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
+  async function handleGoogleLogin() {
     setLoading(true)
     setError('')
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError(error.message)
-    setLoading(false)
-  }
-
-  async function handleOAuth(provider: 'google' | 'github') {
-    setLoading(true)
-    setError('')
-    const { error } = await supabase.auth.signInWithOAuth({ provider })
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' })
     if (error) setError(error.message)
     setLoading(false)
   }
 
   return (
-    <div>
-      <h1>Login</h1>
-    </div>
+    <ConfirmationScreen
+      title="Inicia sesión con Google"
+      description="Accede a tu cuenta usando Google. No necesitas usuario ni contraseña."
+      buttonText="Entrar con Google"
+      logo={CircleUser}
+      onButtonClick={handleGoogleLogin}
+      loading={loading}
+      linkText={error && <span className="text-red-500">{error}</span>}
+    />
   )
-  //   <div style={{ maxWidth: 320, margin: 'auto', padding: 32 }}>
-  //     <form onSubmit={handleLogin}>
-  //       <input
-  //         type="email"
-  //         placeholder="Email"
-  //         value={email}
-  //         onChange={e => setEmail(e.target.value)}
-  //         required
-  //         style={{ width: '100%', marginBottom: 8 }}
-  //       />
-  //       <input
-  //         type="password"
-  //         placeholder="Password"
-  //         value={password}
-  //         onChange={e => setPassword(e.target.value)}
-  //         required
-  //         style={{ width: '100%', marginBottom: 8 }}
-  //       />
-  //       <button type="submit" disabled={loading} style={{ width: '100%' }}>
-  //         {loading ? 'Logging in...' : 'Log In'}
-  //       </button>
-  //     </form>
-  //     <div style={{ margin: '16px 0', textAlign: 'center' }}>or</div>
-  //     <button onClick={() => handleOAuth('google')} style={{ width: '100%', marginBottom: 8 }}>
-  //       Continue with Google
-  //     </button>
-  //     <button onClick={() => handleOAuth('github')} style={{ width: '100%' }}>
-  //       Continue with GitHub
-  //     </button>
-  //     {error && <div style={{ color: 'red', marginTop: 16 }}>{error}</div>}
-  //   </div>
-  // )
 }
